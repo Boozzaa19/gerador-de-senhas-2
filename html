@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Senhas Seguro | Endrick Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Fundo com imagem do Endrick + Overlay escuro para dar leitura ao texto */
+            background: linear-gradient(135px, rgba(29, 38, 113, 0.85), rgba(195, 55, 100, 0.85)), 
+                        url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1200') no-repeat center center/cover;
+            /* NOTA: Substitua a URL acima pela foto oficial do Endrick que você mais gostar! */
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(20, 20, 35, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid #8a2be2;
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45px, #00d2ff, #9b51e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        #password {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00d2ff;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .btn-copy {
+            background: #9b51e0;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-copy:hover {
+            background: #00d2ff;
+            color: #000;
+        }
+
+        .setting {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        input[type="number"] {
+            background: #1a1a2e;
+            border: 1px solid #9b51e0;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            width: 60px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #00d2ff;
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-generate {
+            width: 100%;
+            background: linear-gradient(45px, #9b51e0, #00d2ff);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gerador Pró-Senha</h1>
+        
+        <div class="result-container">
+            <span id="password">Clique em Gerar</span>
+            <button class="btn-copy" id="clipboard">Copiar</button>
+        </div>
+
+        <div class="settings">
+            <div class="setting">
+                <label>Tamanho da senha (Recomendado: 12+)</label>
+                <input type="number" id="length" min="8" max="32" value="16">
+            </div>
+            <div class="setting">
+                <label>Incluir Letras Maiúsculas</label>
+                <input type="checkbox" id="uppercase" checked>
+            </div>
+            <div class="setting">
+                <label>Incluir Letras Minúsculas</label>
+                <input type="checkbox" id="lowercase" checked>
+            </div>
+            <div class="setting">
+                <label>Incluir Números</label>
+                <input type="checkbox" id="numbers" checked>
+            </div>
+            <div class="setting">
+                <label>Incluir Símbolos</label>
+                <input type="checkbox" id="symbols" checked>
+            </div>
+        </div>
+
+        <button class="btn-generate" id="generate">Gerar Senha Segura</button>
+    </div>
+
+    <script>
+        const passwordEl = document.getElementById('password');
+        const lengthEl = document.getElementById('length');
+        const uppercaseEl = document.getElementById('uppercase');
+        const lowercaseEl = document.getElementById('lowercase');
+        const numbersEl = document.getElementById('numbers');
+        const symbolsEl = document.getElementById('symbols');
+        const generateEl = document.getElementById('generate');
+        const clipboardEl = document.getElementById('clipboard');
+
+        const randomFunc = {
+            lower: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 26) + 97),
+            upper: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 26) + 65),
+            number: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 10) + 48),
+            symbol: () => {
+                const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+                return symbols[Math.floor(cryptoGetRandom() * symbols.length)];
+            }
+        };
+
+        // Função de segurança que substitui o Math.random por criptografia real do navegador
+        function cryptoGetRandom() {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] / 4294967296;
+        }
+
+        generateEl.addEventListener('click', () => {
+            const length = +lengthEl.value;
+            const hasLower = lowercaseEl.checked;
+            const hasUpper = uppercaseEl.checked;
+            const hasNumber = numbersEl.checked;
+            const hasSymbol = symbolsEl.checked;
+
+            passwordEl.innerText = generatePassword(hasLower, hasUpper, hasNumber, hasSymbol, length);
+        });
+
+        function generatePassword(lower, upper, number, symbol, length) {
+            let generatedPassword = '';
+            const typesCount = lower + upper + number + symbol;
+            const typesArr = [{ lower }, { upper }, { number }, { symbol }].filter(item => Object.values(item)[0]);
+
+            if (typesCount === 0) return 'Selecione uma opção!';
+
+            for (let i = 0; i < length; i += typesCount) {
+                // Embaralha a seleção dos caracteres para evitar padrões previsíveis
+                typesArr.sort(() => cryptoGetRandom() - 0.5);
+                
+                typesArr.forEach(type => {
+                    const funcName = Object.keys(type)[0];
+                    generatedPassword += randomFunc[funcName]();
+                });
+            }
+
+            return generatedPassword.slice(0, length);
+        }
+
+        clipboardEl.addEventListener('click', () => {
+            const password = passwordEl.innerText;
+            if (!password || password === 'Clique em Gerar' || password === 'Selecione uma opção!') return;
+            
+            navigator.clipboard.writeText(password);
+            alert('Senha copiada com sucesso para a área de transferência!');
+        });
+    </script>
+</body>
+</html>
