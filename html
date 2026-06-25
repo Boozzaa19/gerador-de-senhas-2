@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Senhas Seguro | Endrick Edition</title>
+    <title>Gerador de Senhas Seguro</title>
     <style>
         * {
             margin: 0;
@@ -17,212 +17,288 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Fundo com imagem do Endrick + Overlay escuro para dar leitura ao texto */
-            background: linear-gradient(135px, rgba(29, 38, 113, 0.85), rgba(195, 55, 100, 0.85)), 
-                        url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1200') no-repeat center center/cover;
-            /* NOTA: Substitua a URL acima pela foto oficial do Endrick que você mais gostar! */
+            background: radial-gradient(circle at top right, #2e0854, #0a0a1e), 
+                        linear-gradient(135px, #0d1b2a 0%, #1f0033 100%);
             padding: 20px;
         }
 
-        .container {
-            background: rgba(20, 20, 35, 0.85);
-            backdrop-filter: blur(10px);
-            border: 2px solid #8a2be2;
-            box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+        .card {
+            background: rgba(15, 12, 30, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 210, 255, 0.1);
             padding: 30px;
-            border-radius: 16px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 450px;
-            color: #fff;
+            max-width: 460px;
+            color: #f1f1f1;
         }
 
         h1 {
             text-align: center;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.7rem;
+            margin-bottom: 25px;
             background: linear-gradient(45px, #00d2ff, #9b51e0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-weight: 700;
         }
 
-        .result-container {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 8px;
+        .output-area {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 16px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 210, 255, 0.3);
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            transition: border 0.3s;
         }
 
-        #password {
+        .output-area:hover {
+            border-color: rgba(155, 81, 224, 0.5);
+        }
+
+        #password-display {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 600;
             color: #00d2ff;
             word-break: break-all;
             user-select: all;
+            padding-right: 10px;
         }
 
         .btn-copy {
-            background: #9b51e0;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            background: rgba(155, 81, 224, 0.2);
+            border: 1px solid #9b51e0;
+            color: #e0b0ff;
+            padding: 8px 14px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
         }
 
         .btn-copy:hover {
-            background: #00d2ff;
-            color: #000;
+            background: #9b51e0;
+            color: white;
+            box-shadow: 0 0 10px rgba(155, 81, 224, 0.4);
         }
 
-        .setting {
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .option {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
         }
 
         input[type="number"] {
-            background: #1a1a2e;
-            border: 1px solid #9b51e0;
-            color: white;
-            padding: 5px;
-            border-radius: 4px;
-            width: 60px;
+            background: #0f0c1e;
+            border: 1px solid #5a189a;
+            color: #00d2ff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 70px;
             text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: #00d2ff;
         }
 
         input[type="checkbox"] {
-            accent-color: #00d2ff;
-            width: 18px;
-            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #5a189a;
+            border-radius: 6px;
+            background: #0f0c1e;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input[type="checkbox"]:checked {
+            background: #9b51e0;
+            border-color: #00d2ff;
+        }
+
+        input[type="checkbox"]:checked::before {
+            content: "✓";
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .btn-generate {
             width: 100%;
-            background: linear-gradient(45px, #9b51e0, #00d2ff);
+            background: linear-gradient(135px, #00d2ff 0%, #9b51e0 100%);
             color: white;
             border: none;
-            padding: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 12px;
             cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(155, 81, 224, 0.2);
         }
 
         .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .btn-generate:active {
+            transform: translateY(1px);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Gerador Pró-Senha</h1>
+    <div class="card">
+        <h1>Gerador de Senha</h1>
         
-        <div class="result-container">
-            <span id="password">Clique em Gerar</span>
-            <button class="btn-copy" id="clipboard">Copiar</button>
+        <div class="output-area">
+            <span id="password-display">Gerar nova senha...</span>
+            <button class="btn-copy" id="btn-copy">Copiar</button>
         </div>
 
-        <div class="settings">
-            <div class="setting">
-                <label>Tamanho da senha (Recomendado: 12+)</label>
+        <div class="option-group">
+            <div class="option">
+                <label for="length">Comprimento da senha (8-32)</label>
                 <input type="number" id="length" min="8" max="32" value="16">
             </div>
-            <div class="setting">
-                <label>Incluir Letras Maiúsculas</label>
+            <div class="option">
+                <label for="uppercase">Incluir Letras Maiúsculas (A-Z)</label>
                 <input type="checkbox" id="uppercase" checked>
             </div>
-            <div class="setting">
-                <label>Incluir Letras Minúsculas</label>
+            <div class="option">
+                <label for="lowercase">Incluir Letras Minúsculas (a-z)</label>
                 <input type="checkbox" id="lowercase" checked>
             </div>
-            <div class="setting">
-                <label>Incluir Números</label>
+            <div class="option">
+                <label for="numbers">Incluir Números (0-9)</label>
                 <input type="checkbox" id="numbers" checked>
             </div>
-            <div class="setting">
-                <label>Incluir Símbolos</label>
+            <div class="option">
+                <label for="symbols">Incluir Símbolos (!@#$...)</label>
                 <input type="checkbox" id="symbols" checked>
             </div>
         </div>
 
-        <button class="btn-generate" id="generate">Gerar Senha Segura</button>
+        <button class="btn-generate" id="btn-generate">Criar Senha Forte</button>
     </div>
 
     <script>
-        const passwordEl = document.getElementById('password');
-        const lengthEl = document.getElementById('length');
-        const uppercaseEl = document.getElementById('uppercase');
-        const lowercaseEl = document.getElementById('lowercase');
-        const numbersEl = document.getElementById('numbers');
-        const symbolsEl = document.getElementById('symbols');
-        const generateEl = document.getElementById('generate');
-        const clipboardEl = document.getElementById('clipboard');
+        const display = document.getElementById('password-display');
+        const lengthInput = document.getElementById('length');
+        const upperCheck = document.getElementById('uppercase');
+        const lowerCheck = document.getElementById('lowercase');
+        const numberCheck = document.getElementById('numbers');
+        const symbolCheck = document.getElementById('symbols');
+        const generateBtn = document.getElementById('btn-generate');
+        const copyBtn = document.getElementById('btn-copy');
 
-        const randomFunc = {
-            lower: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 26) + 97),
-            upper: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 26) + 65),
-            number: () => String.fromCharCode(Math.floor(cryptoGetRandom() * 10) + 48),
-            symbol: () => {
-                const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
-                return symbols[Math.floor(cryptoGetRandom() * symbols.length)];
-            }
+        const charSets = {
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            number: '0123456789',
+            symbol: '!@#$%^&*()_+-=[]{}|;:,.<>?'
         };
 
-        // Função de segurança que substitui o Math.random por criptografia real do navegador
-        function cryptoGetRandom() {
+        // Função para gerar números aleatórios seguros via API Criptográfica do Navegador
+        function secureRandomInt(max) {
             const array = new Uint32Array(1);
             window.crypto.getRandomValues(array);
-            return array[0] / 4294967296;
+            return array[0] % max;
         }
 
-        generateEl.addEventListener('click', () => {
-            const length = +lengthEl.value;
-            const hasLower = lowercaseEl.checked;
-            const hasUpper = uppercaseEl.checked;
-            const hasNumber = numbersEl.checked;
-            const hasSymbol = symbolsEl.checked;
+        function generatePassword() {
+            let length = parseInt(lengthInput.value);
+            
+            // Força limites seguros de tamanho
+            if (isNaN(length) || length < 8) length = 8;
+            if (length > 32) length = 32;
+            lengthInput.value = length;
 
-            passwordEl.innerText = generatePassword(hasLower, hasUpper, hasNumber, hasSymbol, length);
-        });
+            let pool = '';
+            let guaranteedChars = [];
 
-        function generatePassword(lower, upper, number, symbol, length) {
-            let generatedPassword = '';
-            const typesCount = lower + upper + number + symbol;
-            const typesArr = [{ lower }, { upper }, { number }, { symbol }].filter(item => Object.values(item)[0]);
-
-            if (typesCount === 0) return 'Selecione uma opção!';
-
-            for (let i = 0; i < length; i += typesCount) {
-                // Embaralha a seleção dos caracteres para evitar padrões previsíveis
-                typesArr.sort(() => cryptoGetRandom() - 0.5);
-                
-                typesArr.forEach(type => {
-                    const funcName = Object.keys(type)[0];
-                    generatedPassword += randomFunc[funcName]();
-                });
+            // Adiciona os tipos de caracteres escolhidos e garante pelo menos um de cada
+            if (upperCheck.checked) {
+                pool += charSets.upper;
+                guaranteedChars.push(charSets.upper[secureRandomInt(charSets.upper.length)]);
+            }
+            if (lowerCheck.checked) {
+                pool += charSets.lower;
+                guaranteedChars.push(charSets.lower[secureRandomInt(charSets.lower.length)]);
+            }
+            if (numberCheck.checked) {
+                pool += charSets.number;
+                guaranteedChars.push(charSets.number[secureRandomInt(charSets.number.length)]);
+            }
+            if (symbolCheck.checked) {
+                pool += charSets.symbol;
+                guaranteedChars.push(charSets.symbol[secureRandomInt(charSets.symbol.length)]);
             }
 
-            return generatedPassword.slice(0, length);
+            if (pool === '') {
+                display.innerText = 'Selecione uma opção!';
+                display.style.color = '#ff4d4d';
+                return;
+            }
+
+            display.style.color = '#00d2ff';
+            let passwordResult = [...guaranteedChars];
+
+            // Preenche o restante do comprimento solicitado
+            for (let i = passwordResult.length; i < length; i++) {
+                const randomIndex = secureRandomInt(pool.length);
+                passwordResult.push(pool[randomIndex]);
+            }
+
+            // Embaralha o resultado final usando algoritmo de Fisher-Yates seguro
+            for (let i = passwordResult.length - 1; i > 0; i--) {
+                const j = secureRandomInt(i + 1);
+                [passwordResult[i], passwordResult[j]] = [passwordResult[j], passwordResult[i]];
+            }
+
+            display.innerText = passwordResult.join('');
         }
 
-        clipboardEl.addEventListener('click', () => {
-            const password = passwordEl.innerText;
-            if (!password || password === 'Clique em Gerar' || password === 'Selecione uma opção!') return;
-            
-            navigator.clipboard.writeText(password);
-            alert('Senha copiada com sucesso para a área de transferência!');
-        });
-    </script>
-</body>
-</html>
+        generateBtn.addEventListener('click', generatePassword);
+
+        copyBtn.addEventListener('click', () => {
+            const currentTxt = display.innerText;
+            if (!currentTxt || currentTxt === 'Gerar nova senha...' || currentTxt === 'Selecione uma opção!') return;
+
+            navigator.clipboard.writeText(currentTxt).then(() => {
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = 'Copiado!';
+                copyBtn.style.background = '#00d2ff';
+                copyBtn.style.color = '#0a0a1e';
+                copyBtn.style.borderColor = '#00d2ff';
+                
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.style.background = '';
+                    copyBtn.style.color = '';
+                    copyBtn.style.borderColor = '';
